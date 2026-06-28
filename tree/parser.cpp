@@ -86,11 +86,11 @@ AstPtr Parser::parseAtom() {
         case '\\':
             return parseEscape();
 
-        case ')':  error("лишняя ')'");
-        case '*':  error("нечего повторять перед '*'");
-        case '{':  error("нечего повторять перед '{'");
-        case ']':  error("лишняя ']'");
-        case '}':  error("лишняя '}'");
+        case ')':  error("Unexpected ')'");
+        case '*':  error("Nothing to repeat before '*'");
+        case '{':  error("Nothing to repeat before '{'");
+        case ']':  error("Unexpected ']'");
+        case '}':  error("Unexpected '}'");
 
         default:
             get();
@@ -104,7 +104,7 @@ AstPtr Parser::parseCharClass() {
     while (!atEnd() && peek() != ']') {
         char c = get();
         if (c == '\\') {
-            if (atEnd()) error("'\\' в конце строки");
+            if (atEnd()) error("'\\' in the EOF");
             c = get();
         }
         members.insert(c);
