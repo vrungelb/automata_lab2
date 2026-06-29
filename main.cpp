@@ -13,6 +13,9 @@ int main() {
     Parser ParserObj(user_input_string);
     try {
         auto ParsedObj = ParserObj.parse();
+        bool ok = renderTree(ParsedObj.root.get(), "tree");
+        if (ok) std::cout << "Tree saved to tree.png" << std::endl;
+        else std::cout << "Error: Graphviz not found" << std::endl;
     }
 
     catch (const ParseError& e) {
