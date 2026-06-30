@@ -16,8 +16,8 @@ ParseResult Parser::parse() {
 
     for (auto [n, p] : backrefs) {
         if (n < 1 || n > groupCounter)
-            throw ParseError("reference \\" + std::to_string(n) +
-                             " to non-existent group", p);
+            throw ParseError("Reference \\" + std::to_string(n) +
+                             " to non-existent group!", p);
     }
 
 

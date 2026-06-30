@@ -20,7 +20,7 @@ struct AstNode {
     NodeKind kind;
 
     char symbol = '\0';           // для Symbol
-    std::vector<char> charset;    // для CharClass, список символов внутри [...]
+    std::vector<char> charset;    // для CharClass, для списка символов внутри [...]
     int count = 0;                // для Repeat
     int groupId = 0;              // для Group и Backref
 
