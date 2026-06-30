@@ -10,13 +10,24 @@ void NFA::addTransition(size_t from_state, size_t to_state, char transition_symb
 }
 
 void NFA::addEpsilon(size_t from_state, size_t to_state) {
-    transitions.push_back({from_state, to_state, '0',true});
+    transitions.push_back({from_state, to_state, '\0',true});
 }
 
 void NFA::buildFromAst(const AstNode* node) {
     NfaFragment nfa_result = build(node);
     start = nfa_result.entry_state;
     accept = nfa_result.exit_state;
+}
+
+void NFA::mergeStates(size_t victim, size_t survivor) {
+    for (Transition& t: transitions) {
+        if (t.from_state == victim) {
+            t.from_state = survivor;
+        }
+        if (t.to_state == victim) {
+            t.to_state = survivor;
+        }
+    }
 }
 
 NfaFragment NFA::build(const AstNode* node) {
@@ -47,7 +58,7 @@ NfaFragment NFA::build(const AstNode* node) {
         case NodeKind::Concat: {
             NfaFragment left = NFA::build(node->left.get());
             NfaFragment right = NFA::build(node->right.get());
-            addEpsilon(left.exit_state, right.entry_state);
+            mergeStates(left.exit_state, right.entry_state);
             return{left.entry_state, right.exit_state};
         }
 
@@ -88,7 +99,7 @@ NfaFragment NFA::build(const AstNode* node) {
             NfaFragment chain = build(node->left.get());
             for (int i = 1; i < node->count; i++) {
                 NfaFragment next = build(node->left.get());
-                addEpsilon(chain.exit_state, next.entry_state);
+                mergeStates(chain.exit_state, next.entry_state);
                 chain.exit_state = next.exit_state;
             }
             return chain;
