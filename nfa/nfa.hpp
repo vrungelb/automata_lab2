@@ -23,6 +23,19 @@ public:
     size_t newState();
     void addTransition(size_t from_state, size_t to_state, char transition_symbol);
     void addEpsilon(size_t from_state, size_t to_state);
+    void buildFromAst(const AstNode* node);
+    size_t getNumStates() const {
+        return num_states;
+    }
+    size_t getStart() const {
+        return start;
+    }
+    size_t getAccept() const {
+        return accept;
+    }
+    const std::vector<Transition>& getTransitions() const {
+        return transitions;
+    }
 private:
     std::vector<Transition> transitions;                                                // список переходов
     NfaFragment build(const AstNode* node);                                             // билдер НКА
