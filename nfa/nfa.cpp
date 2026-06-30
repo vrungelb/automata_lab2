@@ -1,4 +1,23 @@
 #include "nfa.hpp"
+#include <stdexcept>
+
+size_t NFA::newState() {
+    return num_states++;
+}
+
+void NFA::addTransition(size_t from_state, size_t to_state, char transition_symbol) {
+    transitions.push_back({from_state, to_state, transition_symbol, false});
+}
+
+void NFA::addEpsilon(size_t from_state, size_t to_state) {
+    transitions.push_back({from_state, to_state, '0',true});
+}
+
+void NFA::buildFromAst(const AstNode* node) {
+    NfaFragment nfa_result = build(node);
+    start = nfa_result.entry_state;
+    accept = nfa_result.exit_state;
+}
 
 NfaFragment NFA::build(const AstNode* node) {
     switch (node->kind) {
@@ -55,15 +74,33 @@ NfaFragment NFA::build(const AstNode* node) {
             return {entry_state, exit_state};
         }
 
-        case NodeKind::Repeat:
-            break;
+        case NodeKind::Repeat: {
+            if (node->count == 0) {
+                size_t entry_state = newState();
+                size_t exit_state = newState();
+                addEpsilon(entry_state, exit_state);
+                return {entry_state, exit_state};
+            }
+            if (node->count == 1) {
+                NfaFragment left = build(node->left.get());
+                return left;
+            }
+            NfaFragment chain = build(node->left.get());
+            for (int i = 1; i < node->count; i++) {
+                NfaFragment next = build(node->left.get());
+                addEpsilon(chain.exit_state, next.entry_state);
+                chain.exit_state = next.exit_state;
+            }
+            return chain;
+        }
 
         case NodeKind::Group: {
             NfaFragment left = build(node->left.get());
-            return {left};
+            return left;
         }
 
         case NodeKind::Backref:
-            break;
+            throw std::runtime_error("Language with backrefs is non-regular");
     }
+    throw std::runtime_error("Unknown node kind");
 }
