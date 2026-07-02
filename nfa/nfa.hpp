@@ -18,7 +18,7 @@ struct NfaFragment {                                                            
     size_t exit_state;
 };
 
-class NFA {
+class                                                                                                                                                                                                                                                                                                                                                                                               NFA {
 public:
     size_t newState();
     void addTransition(size_t from_state, size_t to_state, char transition_symbol);

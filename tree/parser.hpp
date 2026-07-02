@@ -44,8 +44,8 @@ private:
     int parseNumber();
 
     // мелкие помощники для работы с потоком символов
-    bool atEnd() const { return pos >= s.size(); }
-    char peek() const { return s[pos]; }
+    [[nodiscard]] bool atEnd() const { return pos >= s.size(); }
+    [[nodiscard]] char peek() const { return s[pos]; }
     char get() { return s[pos++]; }
     [[noreturn]] void error(const std::string& msg) const {
         throw ParseError(msg, pos);
